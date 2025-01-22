@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Let's Go Catch Randomizer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body
+    class="bg-zinc-900 text-zinc-100 min-h-screen flex items-center justify-center"
+  >
+    <main class="max-w-lg w-full p-6 bg-zinc-800 rounded-lg shadow-md">
+      <h1 class="text-3xl font-bold text-center mb-6">
+        Let's Go Catch Randomizer
+      </h1>
+      <p class="text-sm text-zinc-300 mb-4 text-center">
+        This will download a JSON file that you can update to this tracker:
+        <a
+          href="https://lets-go-tracker.web.app/tracker"
+          target="_blank"
+          class="text-blue-500 hover:underline"
+          >Spiderc's Let's Go Tracker</a
+        >
+      </p>
+      <form action="/randomize" method="GET" class="space-y-4">
+        <div>
+          <label for="allowedOnePct" class="text-sm font-medium text-zinc-300"
+            >Allowed One Percent:</label
+          >
+          <div class="flex items-center space-x-4">
+            <label class="flex items-center">
+              <input type="radio" name="allowedOnePct" value="0" required />
+              <span class="ml-2">0</span>
+            </label>
+            <label class="flex items-center">
+              <input type="radio" name="allowedOnePct" value="1" required />
+              <span class="ml-2">1</span>
+            </label>
+            <label class="flex items-center">
+              <input type="radio" name="allowedOnePct" value="2" required />
+              <span class="ml-2">2</span>
+            </label>
+            <label class="flex items-center">
+              <input type="radio" name="allowedOnePct" value="3" required />
+              <span class="ml-2">3</span>
+            </label>
+            <label class="flex items-center">
+              <input
+                type="radio"
+                name="allowedOnePct"
+                value="unlimited"
+                required
+              />
+              <span class="ml-2">Unlimited</span>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label for="seed" class="text-sm font-medium text-zinc-300"
+            >Seed (Optional):</label
+          >
+          <input
+            type="number"
+            id="seed"
+            name="seed"
+            min="0"
+            placeholder="Leave blank to get a random seed"
+            class="w-full mt-1 p-2 bg-zinc-700 border border-zinc-600 rounded-lg"
+          />
+        </div>
+
+        <div>
+          <label for="version" class="text-sm font-medium text-zinc-300"
+            >Choose your version:</label
+          >
+          <div class="flex items-center space-x-4">
+            <label class="flex items-center">
+              <input type="radio" name="version" value="Pikachu" required />
+              <span class="ml-2">Pikachu</span>
+            </label>
+            <label class="flex items-center">
+              <input type="radio" name="version" value="Eevee" required />
+              <span class="ml-2">Eevee</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="text-center">
+          <button
+            type="submit"
+            class="w-full py-2 px-4 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600"
+          >
+            Generate
+          </button>
+        </div>
+      </form>
+    </main>
+  </body>
+</html>
