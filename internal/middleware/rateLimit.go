@@ -41,7 +41,7 @@ func (rl *RateLimiterMiddleware) GetLimiter(ip string) *rate.Limiter {
 	return limiter
 }
 
-func (rl *RateLimiterMiddleware) Middleware(next http.Handler) http.Handler {
+func (rl *RateLimiterMiddleware) Middleware(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ip, _, err := net.SplitHostPort(r.RemoteAddr)
 		if err != nil {

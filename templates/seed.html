@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Let's Go Catch Randomizer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body
+    class="bg-zinc-900 text-zinc-100 min-h-screen flex items-center justify-center"
+  >
+    <main class="max-w-lg w-full p-6 bg-zinc-800 rounded-lg shadow-md">
+      <a href="/"
+        ><h1 class="text-3xl font-bold text-center mb-6">
+          Let's Go Catch Randomizer
+        </h1></a
+      >
+      <p class="text-sm text-zinc-300 mb-4 text-center">
+        This will download a JSON file that you can update to this tracker:
+        <a
+          href="https://lets-go-tracker.web.app/tracker"
+          target="_blank"
+          class="text-blue-500 hover:underline"
+          >Spiderc's Let's Go Tracker</a
+        >
+      </p>
+
+      <div class="flex mb-2 space-x-2">
+        <label class="text-sm font-medium text-zinc-300">Generated At:</label>
+        <span class="text-sm text-zinc-300">{{.TimeStamp}}</span>
+      </div>
+
+      <div class="flex mb-6 space-x-2 items-center">
+        <label class="text-sm font-medium text-zinc-300"
+          >Share this seed:</label
+        >
+        <button
+          id="copyButton"
+          class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        >
+          Copy Link to Clipboard
+        </button>
+      </div>
+
+      <div class="text-center">
+        <h2 class="text-xl font-semibold">Download</h2>
+      </div>
+      <form action="{{.DownloadURL}}" method="GET">
+        <div class="text-center flex space-x-4">
+          <button
+            type="submit"
+            name="version"
+            value="pikachu"
+            class="w-full py-2 px-4 bg-yellow-500 text-white font-bold rounded-lg hover:bg-yellow-600"
+          >
+            Pikachu
+          </button>
+          <button
+            type="submit"
+            name="version"
+            value="eevee"
+            class="w-full py-2 px-4 bg-yellow-800 text-white font-bold rounded-lg hover:bg-yellow-900"
+          >
+            Eevee
+          </button>
+        </div>
+      </form>
+    </main>
+  </body>
+  <script>
+    document.getElementById("copyButton").addEventListener("click", () => {
+      navigator.clipboard
+        .writeText("{{.SeedURL}}")
+        .catch((err) => console.error("Failed to copy link:", err));
+    });
+  </script>
+</html>
