@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 
 	"github.com/eddaket/LGPE-Catch-Randomizer/internal/database"
 	"github.com/eddaket/LGPE-Catch-Randomizer/internal/logic"
@@ -152,7 +154,7 @@ func (s *Server) downloadHandler(w http.ResponseWriter, r *http.Request) {
 	data := output.GenerateSpider(&lg, version)
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s_%s_%d.json", "Catch_Rando", version, generation.Seed))
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s_%s_%d.json", "Catch_Rando", cases.Title(language.English).String(version), generation.Seed))
 	_, err = w.Write(data)
 	if err != nil {
 		log.Printf("[ERROR] generationHandler: Error writing JSON %v", err)

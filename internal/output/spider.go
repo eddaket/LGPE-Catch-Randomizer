@@ -27,7 +27,7 @@ type SpiderPokes struct {
 
 func GenerateSpider(gen *logic.Generation, version string) []byte {
 	set := gen.Pikachu
-	if version == "Eevee" {
+	if version == "eevee" {
 		set = gen.Eevee
 	}
 
