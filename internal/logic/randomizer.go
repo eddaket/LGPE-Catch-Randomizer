@@ -21,6 +21,7 @@ type Generation struct {
 	banned        PokemonSet
 	requireBucket PokemonSet
 	onePct        PokemonSet
+	onePctCount   int
 	onePctBucket  PokemonSet
 	randomization *rand.Rand
 
@@ -41,6 +42,7 @@ func Randomize(
 		banned:        PokemonSet{},
 		requireBucket: PokemonSet{},
 		onePct:        PokemonSet{},
+		onePctCount:   0,
 		onePctBucket:  PokemonSet{},
 		randomization: rand.New(rand.NewSource(seed)),
 
@@ -121,6 +123,10 @@ func (g *Generation) attemptAdd(id pokemon.PokemonID) bool {
 	for onePctId := range g.onePct {
 		if g.isFulfilled(g.pokemonMap[onePctId].OnePctRequires) {
 			delete(g.onePct, onePctId)
+			g.onePctCount -= 1
+			if onePctId == DragonairID {
+				g.onePctCount -= 1
+			}
 		}
 	}
 
@@ -134,12 +140,22 @@ func (g *Generation) attemptAdd(id pokemon.PokemonID) bool {
 func (g *Generation) handleOnePct(pokemon *pokemon.Pokemon) bool {
 	// Pokemon's 1% requirements aren't met, so we treat it like a 1%
 	if pokemon.OnePct && !g.isFulfilled(pokemon.OnePctRequires) {
+		count := 1 + g.onePctCount
+
+		// Special case for Dragonair
+		if pokemon.ID == DragonairID {
+			count += 1
+		}
+
 		// Too many 1%s
-		if len(g.onePct) >= g.AllowedOnePct {
+		if count > g.AllowedOnePct {
 			return true
 		}
+
+		// Otherwise we're counting it
+		g.onePctCount = count
+		g.onePct[pokemon.ID] = true
 	}
-	g.onePct[pokemon.ID] = true
 	return false
 }
 
@@ -237,4 +253,5 @@ const (
 	PikachuID   pokemon.PokemonID = 25
 	BulbasaurID pokemon.PokemonID = 1
 	OddishID    pokemon.PokemonID = 43
+	DragonairID pokemon.PokemonID = 148
 )
