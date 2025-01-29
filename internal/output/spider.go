@@ -2,22 +2,21 @@ package output
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/eddaket/LGPE-Catch-Randomizer/internal/logic"
 	"github.com/eddaket/LGPE-Catch-Randomizer/internal/pokemon"
 )
 
 type SpiderTracker struct {
-	Name            string        `json:"name"`
-	TextColor       string        `json:"textColor"`
-	BackgroundColor string        `json:"backgroundColor"`
-	BonusColor      string        `json:"bonusColor"`
-	PlannedColor    string        `json:"plannedColor"`
-	MarkedColor     string        `json:"markedColor"`
-	PokesPerLine    int           `json:"pokesPerLine"`
-	TrackerStyle    string        `json:"trackerStyle"`
-	Pokes           []SpiderPokes `json:"pokes"`
+	// Name            string        `json:"name"`
+	// TextColor       string        `json:"textColor"`
+	// BackgroundColor string        `json:"backgroundColor"`
+	// BonusColor      string        `json:"bonusColor"`
+	// PlannedColor    string        `json:"plannedColor"`
+	// MarkedColor     string        `json:"markedColor"`
+	// PokesPerLine    int           `json:"pokesPerLine"`
+	// TrackerStyle    string        `json:"trackerStyle"`
+	Pokes []SpiderPokes `json:"pokes"`
 }
 
 type SpiderPokes struct {
@@ -33,15 +32,15 @@ func GenerateSpider(gen *logic.Generation, version string) []byte {
 
 	// TODO: Allow customization of these fields. For now you all get my settings
 	out := SpiderTracker{
-		Name:            fmt.Sprintf("Catch Rando %d", gen.Seed),
-		TextColor:       "#ffffff",
-		BackgroundColor: "#000000",
-		BonusColor:      "#27272a",
-		PlannedColor:    "#60a5fa",
-		MarkedColor:     "#fbbf24",
-		PokesPerLine:    15,
-		TrackerStyle:    "bobchao",
-		Pokes:           []SpiderPokes{},
+		// Name:            fmt.Sprintf("Catch Rando %d", gen.Seed),
+		// TextColor:       "#ffffff",
+		// BackgroundColor: "#000000",
+		// BonusColor:      "#27272a",
+		// PlannedColor:    "#60a5fa",
+		// MarkedColor:     "#fbbf24",
+		// PokesPerLine:    15,
+		// TrackerStyle:    "bobchao",
+		Pokes: []SpiderPokes{},
 	}
 
 	for i := 1; i < 151; i++ {
