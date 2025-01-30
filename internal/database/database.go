@@ -25,7 +25,8 @@ type service struct {
 func New() Service {
 	mongoURI := os.Getenv("MONGO_URI")
 	if mongoURI == "" {
-		log.Fatal("[ERROR] Database URI not set")
+		log.Printf("[WARN] Database URI not set, using localhost")
+		mongoURI = "mongodb://localhost:27017"
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
