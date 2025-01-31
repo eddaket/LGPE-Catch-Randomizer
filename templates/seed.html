@@ -7,71 +7,219 @@
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body
-    class="bg-zinc-900 text-zinc-100 min-h-screen flex items-center justify-center"
+    class="flex flex-col justify-center items-center bg-zinc-900 min-h-screen text-zinc-300 text-center text-sm"
   >
-    <main class="max-w-lg w-full p-6 bg-zinc-800 rounded-lg shadow-md">
+    <main class="rounded-lg shadow-md bg-zinc-800 p-6 w-full max-w-lg">
       <a href="/"
-        ><h1 class="text-3xl font-bold text-center mb-6">
+        ><h1 class="mb-2 text-zinc-50 text-3xl font-bold">
           Let's Go Catch Randomizer
         </h1></a
       >
-      <p class="text-sm text-zinc-300 mb-4 text-center">
-        This will download a JSON file that you can update to this tracker:
-        <a
-          href="https://lets-go-tracker.web.app/tracker"
-          target="_blank"
-          class="text-blue-500 hover:underline"
-          >Spiderc's Let's Go Tracker</a
-        >
-      </p>
 
-      <div class="flex mb-2 space-x-2">
-        <label class="text-sm font-medium text-zinc-300">Generated At:</label>
-        <span class="text-sm text-zinc-300">{{.TimeStamp}}</span>
-      </div>
-
-      <div class="flex mb-6 space-x-2 items-center">
-        <label class="text-sm font-medium text-zinc-300"
-          >Share this seed:</label
-        >
-        <button
-          id="copyButton"
-          class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-        >
-          Copy Link to Clipboard
-        </button>
-      </div>
-
-      <div class="text-center">
-        <h2 class="text-xl font-semibold">Download</h2>
-      </div>
-      <form action="{{.DownloadURL}}" method="GET">
-        <div class="text-center flex space-x-4">
-          <button
-            type="submit"
-            name="version"
-            value="pikachu"
-            class="w-full py-2 px-4 bg-yellow-500 text-white font-bold rounded-lg hover:bg-yellow-600"
-          >
-            Pikachu
-          </button>
-          <button
-            type="submit"
-            name="version"
-            value="eevee"
-            class="w-full py-2 px-4 bg-yellow-800 text-white font-bold rounded-lg hover:bg-yellow-900"
-          >
-            Eevee
+      <div class="space-y-2">
+        <div class="flex justify-center space-x-2">
+          <label class="font-medium">Share this seed:</label>
+          <button id="copyButton">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+              <path
+                d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+              />
+            </svg>
           </button>
         </div>
-      </form>
+
+        <div>
+          <div class="space-x-2">
+            <label class="text-zinc-50 font-medium">Seed ID:</label>
+            <span>{{.SeedID}}</span>
+          </div>
+
+          <div class="space-x-2">
+            <label class="text-zinc-50 font-medium">Generated At:</label>
+            <span>{{.TimeStamp}}</span>
+          </div>
+        </div>
+      </div>
+
+      <hr class="my-6 border-t border-zinc-700" />
+
+      <div>
+        <h2 class="text-zinc-50 text-xl font-semibold">Upload Base</h2>
+        <p class="mb-4">
+          Upload a base tracker JSON file that has the settings you want. The
+          seed will be applied on top of those settings. This step is optional.
+        </p>
+        <div class="flex space-x-2">
+          <label
+            for="profileUpload"
+            id="profileUploadLabel"
+            class="w-full rounded-lg bg-blue-700 py-2 px-4 text-zinc-50 font-bold cursor-pointer hover:bg-blue-600"
+          ></label>
+          <input
+            id="profileUpload"
+            name="profileUpload"
+            type="file"
+            accept="application/json"
+            class="hidden"
+          />
+          <button
+            id="clearProfile"
+            class="hidden rounded-lg bg-red-600 py-2 px-4 text-zinc-50 font-bold hover:bg-red-500"
+          >
+            Clear
+          </button>
+        </div>
+      </div>
+
+      <hr class="my-6 border-t border-zinc-700" />
+
+      <div>
+        <h2 class="text-zinc-50 text-xl font-semibold">Download</h2>
+        <p class="mb-4 text-zinc-300">
+          This will download a JSON file that you can upload to this tracker:
+          <a
+            href="https://lets-go-tracker.web.app/tracker"
+            target="_blank"
+            class="text-blue-400 hover:underline"
+            >Spiderc's Let's Go Tracker</a
+          >
+        </p>
+        <div class="flex space-x-4">
+          <button
+            name="version"
+            id="pikachuButton"
+            value="pikachu"
+            class="flex flex-grow justify-center rounded-lg bg-yellow-600 py-2 px-4 text-zinc-50 font-bold hover:bg-yellow-500"
+          >
+            Pikachu!
+          </button>
+          <button
+            name="version"
+            id="eeveeButton"
+            value="eevee"
+            class="flex flex-grow justify-center rounded-lg bg-yellow-900 py-2 px-4 text-zinc-50 font-bold hover:bg-yellow-800"
+          >
+            Eevee!
+          </button>
+        </div>
+      </div>
     </main>
   </body>
   <script>
-    document.getElementById("copyButton").addEventListener("click", () => {
-      navigator.clipboard
-        .writeText("{{.SeedURL}}")
-        .catch((err) => console.error("Failed to copy link:", err));
-    });
+    function updateDisplayForCachedProfile() {
+      document.getElementById("profileUploadLabel").innerText =
+        "Using cached file";
+      document.getElementById("clearProfile").classList.remove("hidden");
+    }
+
+    function updateDisplayForNoProfile() {
+      document.getElementById("profileUpload").value = "";
+      document.getElementById("profileUploadLabel").innerText = "Upload a file";
+      document.getElementById("clearProfile").classList.add("hidden");
+    }
+
+    function loadFromStorage() {
+      let json;
+      try {
+        json = JSON.parse(localStorage.getItem("userProfile"));
+      } catch (e) {
+        localStorage.removeItem("userProfile");
+        json = null;
+      }
+
+      if (json !== null) {
+        updateDisplayForCachedProfile();
+      } else {
+        updateDisplayForNoProfile();
+      }
+    }
+
+    function handleDownload(version) {
+      let userProfile;
+      try {
+        userProfile = JSON.parse(localStorage.getItem("userProfile")) || {};
+      } catch (e) {
+        userProfile = {};
+      }
+
+      fetch(`{{.DownloadURL}}?version=${version}`, {
+        method: "POST",
+        body: JSON.stringify(userProfile),
+      })
+        .then((res) => res.blob())
+        .then((blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `catch-randomizer-${version}-{{.SeedID}}`;
+          a.click();
+
+          window.URL.revokeObjectURL(url);
+        })
+        .catch(() => {
+          alert(
+            "Unknown error downloading tracker. Please refresh and try again"
+          );
+        });
+    }
+
+    function onEntry() {
+      document.getElementById("copyButton").addEventListener("click", () => {
+        navigator.clipboard.writeText("{{.SeedURL}}").catch(() => {
+          // no-op
+        });
+      });
+
+      document
+        .getElementById("profileUpload")
+        .addEventListener("change", (event) => {
+          const file = event.target.files[0];
+          if (!file) {
+            return;
+          }
+
+          const reader = new FileReader();
+          reader.onload = (readEvent) => {
+            try {
+              const json = JSON.parse(readEvent.target.result);
+              localStorage.setItem("userProfile", JSON.stringify(json));
+              updateDisplayForCachedProfile();
+            } catch (e) {
+              alert("Invalid file format. Please upload a valid JSON file");
+              updateDisplayForNoProfile();
+            }
+          };
+
+          reader.readAsText(file);
+        });
+
+      document
+        .getElementById("pikachuButton")
+        .addEventListener("click", () => handleDownload("pikachu"));
+
+      document
+        .getElementById("eeveeButton")
+        .addEventListener("click", () => handleDownload("eevee"));
+
+      document.getElementById("clearProfile").addEventListener("click", () => {
+        localStorage.removeItem("userProfile");
+        updateDisplayForNoProfile();
+      });
+
+      loadFromStorage();
+    }
+
+    onEntry();
   </script>
 </html>

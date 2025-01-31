@@ -9,8 +9,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
 
 	"github.com/eddaket/LGPE-Catch-Randomizer/internal/database"
 	"github.com/eddaket/LGPE-Catch-Randomizer/internal/logic"
@@ -111,31 +109,31 @@ func (s *Server) seedHandler(w http.ResponseWriter, r *http.Request) {
 
 	type SeedData struct {
 		DownloadURL string
+		SeedID      string
 		SeedURL     string
 		TimeStamp   string
 	}
 
 	baseURL := getBaseURL(r)
 	data := SeedData{
-		DownloadURL: fmt.Sprintf("/download/%s", id),
+		DownloadURL: fmt.Sprintf("/seed/%s/tracker", id),
+		SeedID:      id,
 		SeedURL:     fmt.Sprintf("%s/seed/%s", baseURL, id),
 		TimeStamp:   generation.CreatedAt.Format(time.RFC1123),
 	}
 	tmpl.Execute(w, data)
 }
 
-func (s *Server) downloadHandler(w http.ResponseWriter, r *http.Request) {
-	query := r.URL.Query()
-	version := query.Get("version")
-	if version != "pikachu" && version != "eevee" {
-		http.Error(w, "Unsupported version", http.StatusBadRequest)
+func (s *Server) seedTrackerHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
 	id := r.PathValue("id")
 	generation, err := s.db.GetGenerationById(id)
 	if err != nil {
-		log.Printf("[ERROR] generationHandler: Error getting generation %v", err)
+		log.Printf("[ERROR] seedTrackerHandler: Error getting generation %v", err)
 		http.Error(w, "Error retrieving generation", http.StatusInternalServerError)
 		return
 	}
@@ -145,19 +143,32 @@ func (s *Server) downloadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	query := r.URL.Query()
+	version := query.Get("version")
+	if version != "pikachu" && version != "eevee" {
+		http.Error(w, "Unsupported version", http.StatusBadRequest)
+		return
+	}
+
+	input, err := output.DecodeSpider(r.Body)
+	if err != nil {
+		log.Printf("[WARN] seedTrackerHandler: Unable to read body: %v", err)
+		http.Error(w, "Bad request", http.StatusBadRequest)
+		return
+	}
+
 	lg := logic.Generation{
 		Seed:          generation.Seed,
 		AllowedOnePct: generation.AllowedOnePct,
 		Pikachu:       generation.PikachuData,
 		Eevee:         generation.EeveeData,
 	}
-	data := output.GenerateSpider(&lg, version)
+	data := output.GenerateSpider(&lg, version, input)
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s_%s_%d.json", "Catch_Rando", cases.Title(language.English).String(version), generation.Seed))
 	_, err = w.Write(data)
 	if err != nil {
-		log.Printf("[ERROR] generationHandler: Error writing JSON %v", err)
+		log.Printf("[ERROR] seedTrackerHandler: Error writing JSON %v", err)
 		http.Error(w, "Error writing response", http.StatusInternalServerError)
 	}
 }

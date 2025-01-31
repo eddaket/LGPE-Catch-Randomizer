@@ -2,21 +2,23 @@ package output
 
 import (
 	"encoding/json"
+	"fmt"
+	"io"
 
 	"github.com/eddaket/LGPE-Catch-Randomizer/internal/logic"
 	"github.com/eddaket/LGPE-Catch-Randomizer/internal/pokemon"
 )
 
 type SpiderTracker struct {
-	// Name            string        `json:"name"`
-	// TextColor       string        `json:"textColor"`
-	// BackgroundColor string        `json:"backgroundColor"`
-	// BonusColor      string        `json:"bonusColor"`
-	// PlannedColor    string        `json:"plannedColor"`
-	// MarkedColor     string        `json:"markedColor"`
-	// PokesPerLine    int           `json:"pokesPerLine"`
-	// TrackerStyle    string        `json:"trackerStyle"`
-	Pokes []SpiderPokes `json:"pokes"`
+	Name            string        `json:"name,omitempty"`
+	TextColor       string        `json:"textColor,omitempty"`
+	BackgroundColor string        `json:"backgroundColor,omitempty"`
+	BonusColor      string        `json:"bonusColor,omitempty"`
+	PlannedColor    string        `json:"plannedColor,omitempty"`
+	MarkedColor     string        `json:"markedColor,omitempty"`
+	PokesPerLine    int           `json:"pokesPerLine,omitempty"`
+	TrackerStyle    string        `json:"trackerStyle,omitempty"`
+	Pokes           []SpiderPokes `json:"pokes"`
 }
 
 type SpiderPokes struct {
@@ -24,23 +26,35 @@ type SpiderPokes struct {
 	Status string `json:"status"`
 }
 
-func GenerateSpider(gen *logic.Generation, version string) []byte {
+func DecodeSpider(r io.Reader) (*SpiderTracker, error) {
+	// 1<<20 == 1MB
+	lr := io.LimitReader(r, 1<<20)
+
+	var inputSpider SpiderTracker
+	err := json.NewDecoder(lr).Decode(&inputSpider)
+	if err != nil {
+		return nil, fmt.Errorf("error decoding JSON: %w", err)
+	}
+
+	return &inputSpider, nil
+}
+
+func GenerateSpider(gen *logic.Generation, version string, input *SpiderTracker) []byte {
 	set := gen.Pikachu
 	if version == "eevee" {
 		set = gen.Eevee
 	}
 
-	// TODO: Allow customization of these fields. For now you all get my settings
 	out := SpiderTracker{
-		// Name:            fmt.Sprintf("Catch Rando %d", gen.Seed),
-		// TextColor:       "#ffffff",
-		// BackgroundColor: "#000000",
-		// BonusColor:      "#27272a",
-		// PlannedColor:    "#60a5fa",
-		// MarkedColor:     "#fbbf24",
-		// PokesPerLine:    15,
-		// TrackerStyle:    "bobchao",
-		Pokes: []SpiderPokes{},
+		Name:            input.Name,
+		TextColor:       input.TextColor,
+		BackgroundColor: input.BackgroundColor,
+		BonusColor:      input.BonusColor,
+		PlannedColor:    input.PlannedColor,
+		MarkedColor:     input.MarkedColor,
+		PokesPerLine:    input.PokesPerLine,
+		TrackerStyle:    input.TrackerStyle,
+		Pokes:           []SpiderPokes{},
 	}
 
 	for i := 1; i < 151; i++ {
