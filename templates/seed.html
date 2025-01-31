@@ -162,7 +162,7 @@
           const url = window.URL.createObjectURL(blob);
           const a = document.createElement("a");
           a.href = url;
-          a.download = `catch-randomizer-${version}-{{.SeedID}}`;
+          a.download = `catch-randomizer-${version}-{{.SeedID}}.json`;
           a.click();
 
           window.URL.revokeObjectURL(url);
