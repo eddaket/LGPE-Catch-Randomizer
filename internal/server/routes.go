@@ -21,7 +21,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	registerRoute("/", s.indexHandler)
 	registerRoute("/randomize", s.randomizeHandler)
 	registerRoute("/seed/{id}", s.seedHandler)
-	registerRoute("/download/{id}", s.downloadHandler)
+	registerRoute("/download/{id}", s.seedTrackerHandler)
 
 	return mux
 }
