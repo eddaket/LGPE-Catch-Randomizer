@@ -14,36 +14,31 @@ func GetComputedSeed() int64 {
 
 const maxIncluded = 50
 
-type PokemonSet map[pokemon.PokemonID]bool
 type Generation struct {
-	pokemonMap    map[pokemon.PokemonID]*pokemon.Pokemon
-	included      PokemonSet
-	banned        PokemonSet
-	requireBucket PokemonSet
-	onePct        PokemonSet
+	pokemonMap    pokemon.PokemonMap
+	included      pokemon.PokemonSet
+	banned        pokemon.PokemonSet
+	requireBucket pokemon.PokemonSet
+	onePct        pokemon.PokemonSet
 	onePctCount   int
-	onePctBucket  PokemonSet
+	onePctBucket  pokemon.PokemonSet
 	randomization *rand.Rand
 
 	Seed          int64
 	AllowedOnePct int
-	Pikachu       PokemonSet
-	Eevee         PokemonSet
+	Pikachu       pokemon.PokemonSet
+	Eevee         pokemon.PokemonSet
 }
 
-func Randomize(
-	seed int64,
-	allowedOnePct int,
-	pokemonMap map[pokemon.PokemonID]*pokemon.Pokemon,
-) (*Generation, error) {
+func Randomize(seed int64, allowedOnePct int, pokemonMap pokemon.PokemonMap) (*Generation, error) {
 	g := &Generation{
 		pokemonMap:    pokemonMap,
-		included:      PokemonSet{},
-		banned:        PokemonSet{},
-		requireBucket: PokemonSet{},
-		onePct:        PokemonSet{},
+		included:      make(pokemon.PokemonSet),
+		banned:        make(pokemon.PokemonSet),
+		requireBucket: make(pokemon.PokemonSet),
+		onePct:        make(pokemon.PokemonSet),
 		onePctCount:   0,
-		onePctBucket:  PokemonSet{},
+		onePctBucket:  make(pokemon.PokemonSet),
 		randomization: rand.New(rand.NewSource(seed)),
 
 		Seed:          seed,
@@ -55,8 +50,7 @@ func Randomize(
 		return nil, err
 	}
 
-	g.Pikachu = g.included
-	g.Eevee = convertToEevee(g.Pikachu)
+	g.populateVersions()
 
 	return g, nil
 }
@@ -159,12 +153,17 @@ func (g *Generation) handleOnePct(pokemon *pokemon.Pokemon) bool {
 	return false
 }
 
-func (g *Generation) processBucket(bucket PokemonSet) {
+func (g *Generation) processBucket(bucket pokemon.PokemonSet) {
 	for {
 		anyAdded := false
-		for holdId := range bucket {
-			delete(bucket, holdId)
-			if g.attemptAdd(holdId) {
+		for i := 1; i < 151; i++ {
+			id := pokemon.PokemonID(i)
+			if !bucket[id] {
+				continue
+			}
+
+			delete(bucket, id)
+			if g.attemptAdd(id) {
 				anyAdded = true
 			}
 		}
@@ -237,16 +236,16 @@ var ConvertMap = map[pokemon.PokemonID]pokemon.PokemonID{
 	135: 26,  // Jolteon to Raichu
 }
 
-func convertToEevee(pikachu PokemonSet) PokemonSet {
-	eevee := make(PokemonSet, len(pikachu))
-	for pikaId := range pikachu {
+func (g *Generation) populateVersions() {
+	g.Pikachu = g.included
+	g.Eevee = make(pokemon.PokemonSet, len(g.Pikachu))
+	for pikaId := range g.Pikachu {
 		if eeveeId, ok := ConvertMap[pikaId]; ok {
-			eevee[eeveeId] = true
+			g.Eevee[eeveeId] = true
 		} else {
-			eevee[pikaId] = true
+			g.Eevee[pikaId] = true
 		}
 	}
-	return eevee
 }
 
 const (

@@ -28,12 +28,7 @@ func validateRandomizeParams(r *http.Request) (int, error) {
 }
 
 func performRandomization(seed int64, allowedOnePct int) (*logic.Generation, error) {
-	pokemonMap, err := pokemon.LoadPokemonData("data/pokemon_pikachu.json")
-	if err != nil {
-		return nil, fmt.Errorf("error loading Pokemon data: %w", err)
-	}
-
-	gen, err := logic.Randomize(seed, allowedOnePct, pokemonMap)
+	gen, err := logic.Randomize(seed, allowedOnePct, pokemon.AllPokemon)
 	if err != nil {
 		return nil, fmt.Errorf("error during randomization: %w", err)
 	}
