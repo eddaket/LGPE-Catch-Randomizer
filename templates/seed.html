@@ -56,6 +56,26 @@
       <hr class="my-6 border-t border-zinc-700" />
 
       <div>
+        <h2 class="text-zinc-50 text-xl font-semibold">Settings</h2>
+        <div class="grid grid-cols-2 gap-2">
+          <div class="text-zinc-50 text-sm font-medium">
+            Allowed One Percent:
+          </div>
+          <div>{{.Settings.AllowedOnePct}}</div>
+          <div class="text-zinc-50 text-sm font-medium">
+            Allowed Rare Spawns:
+          </div>
+          <div>{{.Settings.AllowedRareSpawn}}</div>
+          <div class="text-zinc-50 text-sm font-medium">
+            Treat Silph Gifts as Rare Spawns:
+          </div>
+          <div>{{.Settings.SilphGifts}}</div>
+        </div>
+      </div>
+
+      <hr class="my-6 border-t border-zinc-700" />
+
+      <div>
         <h2 class="text-zinc-50 text-xl font-semibold">Upload Base</h2>
         <p class="mb-4">
           Upload a base tracker JSON file that has the settings you want. The

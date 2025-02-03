@@ -30,7 +30,7 @@
       <form action="/randomize">
         <div>
           <h2 class="text-zinc-50 text-xl font-semibold">Settings</h2>
-          <div class="text-left">
+          <div class="mb-6 text-left">
             <label for="allowedOnePct" class="text-zinc-50 text-sm font-medium"
               >Allowed One Percent:</label
             >
@@ -56,16 +56,103 @@
                   type="radio"
                   name="allowedOnePct"
                   value="unlimited"
+                  checked
                   required
                 />
                 <span>Unlimited</span>
               </label>
             </div>
-            <p class="mt-1">
+            <p class="mt-1 italic">
               Use this to restrict the amount of 1% encounters (e.g.
               Kangaskhan).
             </p>
           </div>
+
+          <div class="mb-6 text-left">
+            <label
+              for="allowedRareSpawn"
+              class="text-zinc-50 text-sm font-medium"
+              >Allowed Rare Spawns:</label
+            >
+            <div class="flex space-x-4">
+              <label class="flex space-x-2">
+                <input
+                  type="radio"
+                  name="allowedRareSpawn"
+                  value="0"
+                  required
+                />
+                <span>0</span>
+              </label>
+              <label class="flex space-x-2">
+                <input
+                  type="radio"
+                  name="allowedRareSpawn"
+                  value="1"
+                  required
+                />
+                <span>1</span>
+              </label>
+              <label class="flex space-x-2">
+                <input
+                  type="radio"
+                  name="allowedRareSpawn"
+                  value="2"
+                  required
+                />
+                <span>2</span>
+              </label>
+              <label class="flex space-x-2">
+                <input
+                  type="radio"
+                  name="allowedRareSpawn"
+                  value="3"
+                  required
+                />
+                <span>3</span>
+              </label>
+              <label class="flex space-x-2">
+                <input
+                  type="radio"
+                  name="allowedRareSpawn"
+                  value="unlimited"
+                  checked
+                  required
+                />
+                <span>Unlimited</span>
+              </label>
+            </div>
+            <p class="mt-1 italic">
+              Use this to restrict the amount of Rare Spawn (chainable)
+              encounters (e.g. Charmander, Chansey).
+            </p>
+          </div>
+        </div>
+
+        <div class="text-left">
+          <label for="silphGifts" class="text-zinc-50 text-sm font-medium"
+            >Treat Silph Gifts as Rare Spawns:</label
+          >
+          <div class="flex space-x-4">
+            <label class="flex space-x-2">
+              <input
+                type="radio"
+                name="silphGifts"
+                value="true"
+                checked
+                required
+              />
+              <span>Yes</span>
+            </label>
+            <label class="flex space-x-2">
+              <input type="radio" name="silphGifts" value="false" required />
+              <span>No</span>
+            </label>
+          </div>
+          <p class="mt-1 italic">
+            Should the randomizer treat the Silph Gift Pokémon (Lapras and
+            Porygon) as Rare Spawns. This is relevant to the previous setting.
+          </p>
         </div>
 
         <hr class="my-6 border-t border-zinc-700" />

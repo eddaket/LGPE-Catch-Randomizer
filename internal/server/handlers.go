@@ -13,6 +13,7 @@ import (
 	"github.com/eddaket/LGPE-Catch-Randomizer/internal/database"
 	"github.com/eddaket/LGPE-Catch-Randomizer/internal/logic"
 	"github.com/eddaket/LGPE-Catch-Randomizer/internal/output"
+	"github.com/eddaket/LGPE-Catch-Randomizer/internal/pokemon"
 )
 
 const defaultTimeout = 30 * time.Second
@@ -29,7 +30,7 @@ func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) randomizeHandler(w http.ResponseWriter, r *http.Request) {
-	allowedOnePct, err := validateRandomizeParams(r)
+	allowedOnePct, allowedRareSpawn, silphGifts, err := validateRandomizeParams(r)
 	if err != nil {
 		log.Printf("[WARN] randomizeHandler: Invalid parameters %v", err)
 		http.Error(w, "Invalid parameters", http.StatusBadRequest)
@@ -46,19 +47,28 @@ func (s *Server) randomizeHandler(w http.ResponseWriter, r *http.Request) {
 	doneChan := make(chan bool, 1)
 	errorChan := make(chan error, 1)
 	go func() {
-		data, err := performRandomization(seed, allowedOnePct)
+		config := logic.Config{
+			Seed:             seed,
+			AllowedOnePct:    allowedOnePct,
+			AllowedRareSpawn: allowedRareSpawn,
+			SilphGifts:       silphGifts,
+			PokemonMap:       pokemon.AllPokemon,
+		}
+		data, err := performRandomization(&config)
 		if err != nil {
 			errorChan <- err
 			return
 		}
 
 		generation := database.Generation{
-			ID:            id,
-			Seed:          seed,
-			AllowedOnePct: allowedOnePct,
-			PikachuData:   data.Pikachu,
-			EeveeData:     data.Eevee,
-			CreatedAt:     time.Now(),
+			ID:               id,
+			Seed:             seed,
+			AllowedOnePct:    allowedOnePct,
+			AllowedRareSpawn: allowedRareSpawn,
+			SilphGifts:       silphGifts,
+			PikachuData:      data.Pikachu,
+			EeveeData:        data.Eevee,
+			CreatedAt:        time.Now(),
 		}
 
 		err = s.db.InsertGeneration(&generation)
@@ -108,14 +118,44 @@ func (s *Server) seedHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type SeedData struct {
+		Settings struct {
+			AllowedOnePct    string
+			AllowedRareSpawn string
+			SilphGifts       string
+		}
 		DownloadURL string
 		SeedID      string
 		SeedURL     string
 		TimeStamp   string
 	}
 
+	settings := struct {
+		AllowedOnePct    string
+		AllowedRareSpawn string
+		SilphGifts       string
+	}{}
+
+	if generation.AllowedOnePct > 3 {
+		settings.AllowedOnePct = "Unlimited"
+	} else {
+		settings.AllowedOnePct = fmt.Sprint(generation.AllowedOnePct)
+	}
+
+	if generation.AllowedRareSpawn > 3 {
+		settings.AllowedRareSpawn = "Unlimited"
+	} else {
+		settings.AllowedRareSpawn = fmt.Sprint(generation.AllowedRareSpawn)
+	}
+
+	if generation.SilphGifts {
+		settings.SilphGifts = "Yes"
+	} else {
+		settings.SilphGifts = "No"
+	}
+
 	baseURL := getBaseURL(r)
 	data := SeedData{
+		Settings:    settings,
 		DownloadURL: fmt.Sprintf("/seed/%s/tracker", id),
 		SeedID:      id,
 		SeedURL:     fmt.Sprintf("%s/seed/%s", baseURL, id),

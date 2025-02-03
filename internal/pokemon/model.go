@@ -3,14 +3,16 @@ package pokemon
 type PokemonID int
 
 type Pokemon struct {
-	ID             PokemonID   `json:"id"`
-	Name           string      `json:"name"`
-	Obtainable     bool        `json:"obtainable"`
-	OnePct         bool        `json:"onePct"`
-	Excludes       []PokemonID `json:"excludes"`
-	OnePctRequires []PokemonID `json:"onePctRequires"`
-	Requires       []PokemonID `json:"requires"`
-	PreBrock       bool        `json:"preBrock"`
+	ID             PokemonID
+	Name           string
+	Obtainable     bool
+	Requires       []PokemonID
+	Excludes       []PokemonID
+	OnePct         bool
+	OnePctRequires []PokemonID
+	RareSpawn      bool
+	SilphGift      bool
+	PreBrock       bool
 }
 
 type PokemonMap map[PokemonID]*Pokemon

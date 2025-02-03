@@ -5,6 +5,7 @@ var AllPokemon = PokemonMap{
 		ID:         1,
 		Name:       "Bulbasaur",
 		Obtainable: true,
+		RareSpawn:  true,
 	},
 	2: {
 		ID:         2,
@@ -22,6 +23,7 @@ var AllPokemon = PokemonMap{
 		ID:         4,
 		Name:       "Charmander",
 		Obtainable: true,
+		RareSpawn:  true,
 	},
 	5: {
 		ID:         5,
@@ -39,6 +41,7 @@ var AllPokemon = PokemonMap{
 		ID:         7,
 		Name:       "Squirtle",
 		Obtainable: true,
+		RareSpawn:  true,
 	},
 	8: {
 		ID:         8,
@@ -610,6 +613,7 @@ var AllPokemon = PokemonMap{
 		ID:         113,
 		Name:       "Chansey",
 		Obtainable: true,
+		RareSpawn:  true,
 	},
 	114: {
 		ID:         114,
@@ -706,6 +710,8 @@ var AllPokemon = PokemonMap{
 		ID:         131,
 		Name:       "Lapras",
 		Obtainable: true,
+		RareSpawn:  true,
+		SilphGift:  true,
 	},
 	132: {
 		ID:         132,
@@ -739,6 +745,8 @@ var AllPokemon = PokemonMap{
 		ID:         137,
 		Name:       "Porygon",
 		Obtainable: true,
+		RareSpawn:  true,
+		SilphGift:  true,
 	},
 	138: {
 		ID:         138,

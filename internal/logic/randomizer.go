@@ -15,34 +15,42 @@ func GetComputedSeed() int64 {
 const maxIncluded = 50
 
 type Generation struct {
-	pokemonMap    pokemon.PokemonMap
-	included      pokemon.PokemonSet
-	banned        pokemon.PokemonSet
-	requireBucket pokemon.PokemonSet
-	onePct        pokemon.PokemonSet
-	onePctCount   int
-	onePctBucket  pokemon.PokemonSet
-	randomization *rand.Rand
+	pokemonMap     pokemon.PokemonMap
+	included       pokemon.PokemonSet
+	banned         pokemon.PokemonSet
+	requireBucket  pokemon.PokemonSet
+	onePct         pokemon.PokemonSet
+	onePctCount    int
+	onePctBucket   pokemon.PokemonSet
+	rareSpawn      pokemon.PokemonSet
+	rareSpawnCount int
+	randomization  *rand.Rand
 
-	Seed          int64
-	AllowedOnePct int
-	Pikachu       pokemon.PokemonSet
-	Eevee         pokemon.PokemonSet
+	Seed             int64
+	AllowedOnePct    int
+	AllowedRareSpawn int
+	SilphGifts       bool
+	Pikachu          pokemon.PokemonSet
+	Eevee            pokemon.PokemonSet
 }
 
-func Randomize(seed int64, allowedOnePct int, pokemonMap pokemon.PokemonMap) (*Generation, error) {
+func Randomize(config *Config) (*Generation, error) {
 	g := &Generation{
-		pokemonMap:    pokemonMap,
-		included:      make(pokemon.PokemonSet),
-		banned:        make(pokemon.PokemonSet),
-		requireBucket: make(pokemon.PokemonSet),
-		onePct:        make(pokemon.PokemonSet),
-		onePctCount:   0,
-		onePctBucket:  make(pokemon.PokemonSet),
-		randomization: rand.New(rand.NewSource(seed)),
+		pokemonMap:     config.PokemonMap,
+		included:       make(pokemon.PokemonSet),
+		banned:         make(pokemon.PokemonSet),
+		requireBucket:  make(pokemon.PokemonSet),
+		onePct:         make(pokemon.PokemonSet),
+		onePctCount:    0,
+		onePctBucket:   make(pokemon.PokemonSet),
+		rareSpawn:      make(pokemon.PokemonSet),
+		rareSpawnCount: 0,
+		randomization:  rand.New(rand.NewSource(config.Seed)),
 
-		Seed:          seed,
-		AllowedOnePct: allowedOnePct,
+		Seed:             config.Seed,
+		AllowedOnePct:    config.AllowedOnePct,
+		AllowedRareSpawn: config.AllowedRareSpawn,
+		SilphGifts:       config.SilphGifts,
 	}
 
 	err := g.generate()
@@ -107,6 +115,11 @@ func (g *Generation) attemptAdd(id pokemon.PokemonID) bool {
 		return false
 	}
 
+	// Pokemon is a rare spawn but we don't have room. No bucket, just move on
+	if g.handleRareSpawn(pokemon) {
+		return false
+	}
+
 	// Include this Pokemon. Ban anything that needs to be banned
 	g.included[id] = true
 	for _, banId := range pokemon.Excludes {
@@ -149,6 +162,23 @@ func (g *Generation) handleOnePct(pokemon *pokemon.Pokemon) bool {
 		// Otherwise we're counting it
 		g.onePctCount = count
 		g.onePct[pokemon.ID] = true
+	}
+	return false
+}
+
+func (g *Generation) handleRareSpawn(pokemon *pokemon.Pokemon) bool {
+	// Pokemon's a rare spawn and either not a Silph Gift, or Silph Gifts are included
+	if pokemon.RareSpawn && (!pokemon.SilphGift || g.SilphGifts) {
+		count := 1 + g.rareSpawnCount
+
+		// Too many rare spawns
+		if count > g.AllowedRareSpawn {
+			return true
+		}
+
+		// Otherwise, we're counting it
+		g.rareSpawnCount = count
+		g.rareSpawn[pokemon.ID] = true
 	}
 	return false
 }
