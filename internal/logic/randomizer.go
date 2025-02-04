@@ -226,7 +226,7 @@ func (g *Generation) ensureGrassForBrock() error {
 
 	if !g.preBrockSatisfied(chainable) {
 		prospects := []pokemon.PokemonID{OddishID}
-		if chainable {
+		if chainable && g.rareSpawnCount < g.AllowedRareSpawn {
 			prospects = append(prospects, BulbasaurID)
 		}
 
